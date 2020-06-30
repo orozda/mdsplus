@@ -352,8 +352,15 @@ class MARTE2_COMPONENT(Device):
       if mode != MARTE2_COMPONENT.MODE_OUTPUT:
         outTimeNid = self.outputs_out_time;
         outTimeIdx = self.outputs_time_idx.data()
-        preTrigger = self.outputs_pre_trigger.data()
-        postTrigger = self.outputs_post_trigger.data()
+        try:
+            preTrigger = self.outputs_pre_trigger.data()
+        except:
+            preTrigger = 0
+        try:
+            postTrigger = self.outputs_post_trigger.data()
+        except:
+            postTrigger = 100
+ 
         cpuMask = self.outputs_cpu_mask.data()
 
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
@@ -474,6 +481,10 @@ class MARTE2_COMPONENT(Device):
 # timebase
       if isinstance(timebase, Range):
         period = timebase.getDescAt(2).data()
+        try:
+          startTime = timebase.getDescAt(0).data()
+        except:
+          startTime = 0
         outPeriod = period #Driving thread timing
         dataSourceText = '  +'+gamName+'_Timer'+ ' = {\n'
         dataSourceText += '    Class = LinuxTimer\n'
@@ -577,6 +588,10 @@ class MARTE2_COMPONENT(Device):
         origName = self.convertPath(prevTimebase.getParent().getFullPath())
         #Check whether the synchronization source is a Synch Input. Only in this case, the origin DDB is its output DDB since that device is expected to produce Time
         originMode = prevTimebase.getParent().getNode('mode').data()
+        try:
+          startTime = timebase.getDescAt(0).data()
+        except:
+          startTime = 0
         if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
           if self.onSameThread(threadMap, prevTimebase.getParent()):
             timerDDB = origName+'_Output_DDB'
@@ -767,6 +782,8 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '        AutomaticSegmentation = 0\n'
         if outputTrigger != None:
           dataSourceText += '        TimeSignal = 1\n'
+        if startTime != 0:
+          dataSourceText += '        SamplePhase = '+str(int(round(startTime/period)))+'\n'
         dataSourceText += '      }\n'
 
         for outputDict in outputDicts:
@@ -776,6 +793,8 @@ class MARTE2_COMPONENT(Device):
             dataSourceText += '        Period = '+str(period)+'\n'
             dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
             dataSourceText += '        AutomaticSegmentation = 0\n'
+            if startTime != 0:
+              dataSourceText += '        SamplePhase = '+str(int(round(startTime/period)))+'\n'
             dataSourceText += '      }\n'
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
@@ -890,7 +909,7 @@ class MARTE2_COMPONENT(Device):
           period = currTimebase.delta.data()
         else:
           currTimebase = currTimebase.data()
-          startTime - currTimebase[0]
+          startTime = currTimebase[0]
           period = currTimebase[1] - currTimebase[0]
         frequency = 1./period
 
@@ -987,6 +1006,7 @@ class MARTE2_COMPONENT(Device):
       outputTrigger = configDict['outputTrigger']
       outPeriod = 0  #If different from 0, this means that the corresponing component is driving the thread timing
 
+      startTime = 0
       if not isSynch:
         # timebase must be considered only if not synchronizing
         if isinstance(timebase, Range):
@@ -1047,9 +1067,14 @@ class MARTE2_COMPONENT(Device):
         currTimebase = self.getNode('timebase').evaluate()
         if isinstance(currTimebase, Range):
           outPeriod = currTimebase.delta.data()
+          try:
+            startTime = currTimebase.begin.data()
+          except:
+            startTime = 0
         else:
           currTimebase = currTimebase.data()
           outPeriod = currTimebase[1] - currTimebase[0]
+          startTime = currTimebase[0]
 #endif isSynch
 
 
@@ -1136,6 +1161,8 @@ class MARTE2_COMPONENT(Device):
           dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
           dataSourceText += '        AutomaticSegmentation = 0\n'
           dataSourceText += '        Type = uint32\n'
+          if startTime != 0:
+            dataSourceText += '        SamplePhase = '+str(int(round(startTime/period)))+'\n'
           dataSourceText += '      }\n'
 
 
@@ -1152,6 +1179,8 @@ class MARTE2_COMPONENT(Device):
             if isSynch and outIdx == configDict['outTimeIdx'] and outputTrigger != None:
               dataSourceText += '        TimeSignal = 1\n'
 
+            if startTime != 0:
+              dataSourceText += '        SamplePhase = '+str(int(round(startTime/period)))+'\n'
             dataSourceText += '      }\n'
           outIdx = outIdx + 1
         dataSourceText += '    }\n'
@@ -1327,7 +1356,7 @@ class MARTE2_COMPONENT(Device):
           period = currTimebase.delta.data()
         else:
           currTimebase = currTimebase.data()
-          startTime - currTimebase[0]
+          startTime = currTimebase[0]
           period = currTimebase[1] - currTimebase[0]
         frequency = 1./period
 
@@ -1636,7 +1665,7 @@ class MARTE2_COMPONENT(Device):
           period = currTimebase.delta
         else:
           currTimebase = currTimebase.data()
-          startTime - currTimebase[0]
+          startTime = currTimebase[0]
           period = currTimebase[1] - currTimebase[0]
         frequency = 1./period
 
