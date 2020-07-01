@@ -61,8 +61,6 @@ static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
   
 namespace MDSplus {
   
-  
-  
 void eventAst(void *arg, int len, char *buf)
 {
 #ifdef _WIN32
@@ -74,7 +72,6 @@ void eventAst(void *arg, int len, char *buf)
     ev->eventBuf.assign(buf, len);
     ev->eventTime = convertAsciiToTime("now");
     ev->run();
-
     // notify all waiting threads //
     ev->notify();
 #ifdef _WIN32
