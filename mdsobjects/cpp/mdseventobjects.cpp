@@ -43,15 +43,21 @@ int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
 namespace MDSplus {
+  
+static 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  
+  
+  
 void eventAst(void *arg, int len, char *buf)
 {
+    pthread_mutex_lock(&mutex);
     Event *ev = (Event *)arg;
     ev->eventBuf.assign(buf, len);
     ev->eventTime = convertAsciiToTime("now");
     ev->run();
-
     // notify all waiting threads //
     ev->notify();
+    pthread_mutex_unlock(&mutex);
 }
 } // MDSplus
 
