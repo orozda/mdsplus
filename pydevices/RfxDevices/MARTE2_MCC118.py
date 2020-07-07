@@ -55,4 +55,4 @@ class MARTE2_MCC118(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-       pass
+        self.timebase.putData(Data.compile('0:1000000 : 0.01'))
