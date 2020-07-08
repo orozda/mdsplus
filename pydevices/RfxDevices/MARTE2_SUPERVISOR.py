@@ -369,9 +369,14 @@ class MARTE2_SUPERVISOR(Device):
       return 1
 
 
-    def startMarte(self):
+    def startMarteIdle(self):
        self.buildConfiguration()
        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode('name').data()+'_marte_configuration.cfg -s IDLE'], shell=True)
+       return 1
+
+    def startMarte(self):
+       self.buildConfiguration()
+       subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode('name').data()+'_marte_configuration.cfg -s State1'], shell=True)
        return 1
 
     def doState(self, state):
