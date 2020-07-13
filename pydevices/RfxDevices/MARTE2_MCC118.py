@@ -31,6 +31,8 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('mcc118', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
 class MARTE2_MCC118(MC.MARTE2_COMPONENT):
     outputs = [
+        {'name': 'Counter', 'type':'uint32', 'dimensions': 0, 'parameters':[]},
+        {'name': 'Time', 'type':'uint32', 'dimensions': 0, 'parameters':[]},
         {'name': 'Out01', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
         {'name': 'Out02', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
         {'name': 'Out03', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
