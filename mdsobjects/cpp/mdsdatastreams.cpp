@@ -447,6 +447,7 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
 
 EXPORT void EventStream::run()
 {
+    pthread_mutex_lock(&mutex);
     const char *eventName = getName(); //Get the name of the event
     if(strcmp(eventName, "STREAMING")) return; //Should neve return
     size_t bufSize;
@@ -461,6 +462,7 @@ EXPORT void EventStream::run()
     if(readItems < 4)
     {
 	delete [] str;
+	pthread_mutex_unlock(&mutex);
 	return; //Incorrect message
     }
     //skip to fourth blank
@@ -473,6 +475,7 @@ EXPORT void EventStream::run()
 	if(j == len)
 	{
 	    delete [] str;
+	    pthread_mutex_unlock(&mutex);
 	    return; //Incorrect message
 	}
 	j++;
@@ -490,6 +493,7 @@ EXPORT void EventStream::run()
 	    {
 		delete [] times;
 		delete [] str;
+		pthread_mutex_unlock(&mutex);
 		return; //Incorrect message
 	    }
 	    j++;
@@ -512,6 +516,7 @@ EXPORT void EventStream::run()
 	    {
 		delete [] times;
 		delete [] str;
+		pthread_mutex_unlock(&mutex);
 		return; //Incorrect message
 	    }
 	    j++;
@@ -534,6 +539,7 @@ EXPORT void EventStream::run()
 	    delete [] samples;
 	    delete [] str;
 	    deleteData(timesD);
+	    pthread_mutex_unlock(&mutex);
 	    return; //Incorrect message
 	}
 	j++;
@@ -553,11 +559,15 @@ EXPORT void EventStream::run()
     }
     deleteData(samplesD);
     deleteData(timesD);
+    pthread_mutex_unlock(&mutex);
 }
 
 
 EXPORT void EventStream::registerListener(DataStreamListener *listener, const char *name)
 {
+    pthread_mutex_lock(&mutex);
     listeners.push_back(listener);
     names.push_back(std::string(name));
+    pthread_mutex_unlock(&mutex);
+
 }

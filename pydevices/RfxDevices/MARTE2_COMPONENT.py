@@ -357,8 +357,11 @@ class MARTE2_COMPONENT(Device):
     def onSameThread(self, threadMap, node):
       nid1 = self.getNid()
       nid2 = node.getNid()
-      if len(threadMap[nid1]) != len(threadMap[nid2]):
-        return False
+      try:
+        if len(threadMap[nid1]) != len(threadMap[nid2]):
+           return False
+      except:
+           return False
       for idx in range(len(threadMap[nid1])):
         if threadMap[nid1][idx] != threadMap[nid2][idx]:
           return False
