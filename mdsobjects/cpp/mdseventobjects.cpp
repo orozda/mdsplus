@@ -25,6 +25,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsobjects.h"
 #include <string>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <errno.h>
+#include <semaphore.h>
+#endif
+
 using namespace MDSplus;
 using namespace std;
 
@@ -42,22 +52,34 @@ int MdsEventTrigger(char *name, char *buf, int size);
 int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
+#ifdef _WIN32
+static bool critSectInitialized = false;
+static CRITICAL_SECTION critSect;
+#else
+static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+  
 namespace MDSplus {
-  
-static 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  
   
   
 void eventAst(void *arg, int len, char *buf)
 {
-    pthread_mutex_lock(&mutex);
+#ifdef _WIN32
+    EnterCriticalSection(&critSect);
+#else
+    pthread_mutex_lock(&evMutex);
+#endif
     Event *ev = (Event *)arg;
     ev->eventBuf.assign(buf, len);
     ev->eventTime = convertAsciiToTime("now");
     ev->run();
     // notify all waiting threads //
     ev->notify();
-    pthread_mutex_unlock(&mutex);
+#ifdef _WIN32
+    LeaveCriticalSection(&critSect);
+#else
+    pthread_mutex_unlock(&evMutex);
+#endif
 }
 } // MDSplus
 
@@ -65,6 +87,13 @@ void eventAst(void *arg, int len, char *buf)
 
 void Event::connectToEvents()
 {
+#ifdef _WIN32
+    if(!critSectInitialized)
+    {
+        critSectInitialized = true;
+	InitializeCriticalSection(&critSect);
+    }
+#endif
     if ( !MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId) )
 	throw MdsException("failed to connect to event listener");
 }
