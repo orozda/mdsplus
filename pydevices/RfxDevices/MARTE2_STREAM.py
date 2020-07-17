@@ -37,7 +37,7 @@ class MARTE2_STREAM(MC.MARTE2_COMPONENT):
             {'name':'Channel', 'type':'string','value': 'CH'+format(i+1, '03d')}]})
     parameters = [
         {'name':'EventDivision', 'type': 'float32'},
-        {'name':'ShotNumber', 'type': 'int32'},
+        {'name':'PulseNumber', 'type': 'int32'},
         {'name':'TimeIdx', 'type': 'int32', 'value':0},
         {'name':'TimeStreaming', 'type': 'int32', 'value':1},
         {'name':'CpuMask', 'type': 'int32', 'value':15},
