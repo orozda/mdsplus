@@ -1,4 +1,4 @@
-public fun getSpiderShotTimeNew(optional in _shot, optional in _unixTime)
+public fun getSpiderShotTime(optional in _shot, optional in _unixTime)
 {
 
 /*
