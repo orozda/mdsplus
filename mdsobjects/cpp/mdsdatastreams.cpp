@@ -454,6 +454,21 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
     delete [] msgBuf;
 }
 
+EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *samplesD)
+{
+    int nTimesSer, nSamplesSer;
+    char *timesSer = timesD->serialize(&nTimesSer);
+    char *samplesSer = samplesD->serialize(&nSamplesSer);
+    char *msgBuf = new char[nTimesSer +  nSamplesSer + 256];
+    sprintf(msgBuf, "%d %s B %d ", shot, name, nTimesSer);
+    int headerLen = strlen(msgBuf);
+    memcpy(&msgBuf[headerLen], timesSer, nTimesSer);
+    memcpy(&msgBuf[headerLen+nTimesSer], samplesSer, nSamplesSer);
+    Event::setEventRaw("STREAMING", headerLen+nTimesSer+nSamplesSer, msgBuf);
+    delete [] msgBuf;
+    delete[] timesSer;
+    delete [] samplesSer;
+}
 
 
 EXPORT void EventStream::run()
@@ -511,7 +526,7 @@ EXPORT void EventStream::run()
 	    timesD = new Float32(times[0]);
 	delete [] times;
     }
-    else
+    else if (timeFormat[0] != 'B')
     {
 	uint64_t *times = new uint64_t[numSamples];
 	for(int i = 0; i < numSamples; i++)
@@ -532,6 +547,22 @@ EXPORT void EventStream::run()
 	else
 	    timesD = new Uint64(times[0]);
 	delete [] times;
+    }
+    else //Mode B
+    {
+	Data *timesD  = deserialize(&str[j]);
+	Data *samplesD  = deserialize(&str[j+numSamples]);
+	//Expressions already available, do not need any further action
+	std::string nameStr(name);
+	for(size_t i = 0; i < listeners.size(); i++)
+	{
+	    if(names[i] == nameStr)
+		listeners[i]->dataReceived(samplesD, timesD, shot);
+	}
+	deleteData(samplesD);
+	deleteData(timesD);
+	delete[] str;
+	return;
     }
     Data *samplesD;
     float *samples = new float[numSamples];
