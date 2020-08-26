@@ -393,7 +393,18 @@ void *monitorStreamInfo(void *par __attribute__ ((unused)))
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Class StreamEvents provides an alternative streaming solution. It provides a set of methods for sending chuncks of data as MDSplus events. Events will be       //
-// recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners.                                 //
+// recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners. 
+// The coding of the message exchanged is the following:
+// Shot number: ASCII integer
+// Channel number: String
+// Mode: a single char with the following code:
+// - F: times sent as ASCII floats, Samples sent as ASCII floats
+// - L: times sent as ASCII int64, Samples sent as ASCII floats
+// - A: Same as F: recongnized by stream visualizer to doiplsy in oscilloscope mode instead of a chart
+// - B: Times and Samples sent as serialized MDSplus expressions
+// Number of elements (for modes F, L, A) or number of bytes of serialized times (for mode B)
+// For all modes except B: ASCII times and values
+// For mode B only: serialized times followed by serialized values
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace MDSplus;
 
