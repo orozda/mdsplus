@@ -121,48 +121,48 @@ class ACQ196(acq.Acq):
 # now create the post_shot ftp command file
 #
 #            fd = tempfile.TemporaryFile()
-        fd = tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
+        fd = tempfile.NamedTemporaryFile(mode='w+b', suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
         if self.debugging():
             print('opened temporary file %s\n'% fd.name)
         self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
-        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+        fd.write(("acqcmd  setChannelMask " + '1' * active_chan+"\n").encode())
         if clock_src == 'INT_CLOCK':
             if clock_out == None:
                 if self.debugging():
                     print("internal clock no clock out\n")
-                fd.write("acqcmd setInternalClock %d\n" % clock_freq)
+                fd.write(b"acqcmd setInternalClock %d\n" % clock_freq)
             else:
                 clock_out_num_str = clock_out[-1]
                 clock_out_num = int(clock_out_num_str)
                 setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
                 if self.debugging():
                     print("internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,))
-                fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
+                fd.write(b"acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                 fd.write(setDIOcmd)
         else:
             if (clock_out != None) :
                 clock_out_num_str = clock_out[-1]
                 clock_out_num = int(clock_out_num_str)
                 setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
-                fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
-                fd.write(setDIOcmd)
+                fd.write(b"acqcmd setExternalClock %s %d DO%s\n" % (clock_src.encode(), clock_div,clock_out_num_str.encode()))
+                fd.write(setDIOcmd.encode())
             else:
-                fd.write("acqcmd setExternalClock %s %d\n" % (clock_src, clock_div,))
+                fd.write(b"acqcmd setExternalClock %s %d\n" % (clock_src.encode(), clock_div,))
 #
 # set the channel mask 2 times
 #
-        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
-        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+        fd.write(("acqcmd  setChannelMask " + '1' * active_chan+"\n").encode())
+        fd.write(("acqcmd  setChannelMask " + '1' * active_chan+"\n").encode())
 #
 #  set the pre_post mode last
 #
-        fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
+        fd.write(b"set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src.encode(), b'rising',))
 
         self.addGenericJSON(fd)
 
-        fd.write("add_cmd 'get.vin 1:32'>> $settingsf\n")
-        fd.write("add_cmd 'get.vin 33:64'>> $settingsf\n")
-        fd.write("add_cmd 'get.vin 65:96'>> $settingsf\n")
+        fd.write(b"add_cmd 'get.vin 1:32'>> $settingsf\n")
+        fd.write(b"add_cmd 'get.vin 33:64'>> $settingsf\n")
+        fd.write(b"add_cmd 'get.vin 65:96'>> $settingsf\n")
         self.finishJSON(fd, auto_store)
 
         print("Time to make init file = %g\n" % (time.time()-start))

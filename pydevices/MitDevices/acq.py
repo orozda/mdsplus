@@ -132,7 +132,7 @@ class Acq(MDSplus.Device):
         return boardip
 
     def dataSocketDone(self):
-        self.data_socket.send("done\n");
+        self.data_socket.send(b"done\n");
         self.data_socket.shutdown(socket.SHUT_RDWR)
         self.data_socket.close()
         self.data_socket=-1
@@ -160,8 +160,7 @@ class Acq(MDSplus.Device):
         try:
             self.connectAndFlushData()
             self.data_socket.settimeout(10.)
-#            self.data_socket.send("/dev/acq200/data/%02d %d\n" % (chan,end,))
-            self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
+            self.data_socket.send(b"/dev/acq200/data/%02d\n" % (chan,))
             f=self.data_socket.makefile("r",32768)
             bytes_to_read = 2*(end+pre+1)
             buf = f.read(bytes_to_read)
@@ -347,7 +346,7 @@ class Acq(MDSplus.Device):
     def addGenericJSON(self, fd):
         if self.debugging():
             print("starting addGenericJson")
-        fd.write(r"""
+        fd.write((r"""
 begin_json() {   echo "{"; }
 end_json() {   echo "\"done\" : \"done\"  }"; }
 add_term() {   echo " \"$1\" : \"$2\", "; }
@@ -358,14 +357,14 @@ begin_json > $settingsf
 add_term tree $tree >> $settingsf
 add_term shot $shot >> $settingsf
 add_term path $path >> $settingsf
-""")
+""").encode())
         cmds = self.status_cmds.record
         for cmd in cmds:
             cmd = cmd.strip()
             if self.debugging():
                 print("adding cmd '%s' >> $settingsf/ to the file."%(cmd,))
-            fd.write("add_cmd '%s' >> $settingsf\n"%(cmd,))
-        fd.write(r"""
+            fd.write(b"add_cmd '%s' >> $settingsf\n"%(cmd.encode(),))
+        fd.write((r"""
 cat - > /etc/postshot.d/postshot.sh <<EOF
 begin_json() {   echo "{"; }
 end_json() {   echo "\"done\" : \"done\"  }"; }
@@ -392,25 +391,25 @@ add_cmd get.modelspec >> $settingsf
 add_cmd get.numChannels >> $settingsf
 add_cmd get.pulse_number >> $settingsf
 add_cmd get.trig >> $settingsf
-""")
+""").encode())
     def finishJSON(self, fd, auto_store):
         if self.debugging():
             print("starting finishJSON")
-        fd.write("end_json >> $settingsf\n")
+        fd.write(b"end_json >> $settingsf\n")
 
         if auto_store != None :
             if self.debugging():
-                fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
-            fd.write("mdsConnect %s\n" %self.getMyIp())
-            fd.write("mdsOpen %s %d\n" %(self.local_tree, self.tree.shot,))
-            fd.write("mdsValue 'tcl(\"\"do /meth %s autostore\"\", _out),_out'\n" %( self.local_path, ))
+                fd.write(b"mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
+            fd.write(b"mdsConnect %s\n" %self.getMyIp().encode())
+            fd.write(b"mdsOpen %s %d\n" %(self.local_tree.encode(), self.tree.shot,))
+            fd.write(b"mdsValue 'tcl(\"\"do /meth %s autostore\"\", _out),_out'\n" %( self.local_path.encode(), ))
             if self.debugging():
-                fd.write("mdsValue 'write(*,_out)'\n")
-            fd.write("mdsClose\n")
-            fd.write("mdsDisconnect\n")
+                fd.write(b"mdsValue 'write(*,_out)'\n")
+            fd.write(b"mdsClose\n")
+            fd.write(b"mdsDisconnect\n")
 
-        fd.write("EOF\n")
-        fd.write("chmod a+x /etc/postshot.d/postshot.sh\n")
+        fd.write(b"EOF\n")
+        fd.write(b"chmod a+x /etc/postshot.d/postshot.sh\n")
         fd.flush()
         fd.seek(0,0)
         self.auto_store=auto_store
@@ -461,11 +460,11 @@ add_cmd get.trig >> $settingsf
         if self.debugging():
             print("starting startInitialization")
         host = self.getMyIp()
-        fd.write("acqcmd setAbort\n")
-        fd.write("host=%s\n"%(host,))
-        fd.write("tree=%s\n"%(self.local_tree,))
-        fd.write("shot=%s\n"%(self.tree.shot,))
-        fd.write("path='%s'\n"%(self.local_path,))
+        fd.write(b"acqcmd setAbort\n")
+        fd.write(b"host=%s\n"%(host.encode(),))
+        fd.write(b"tree=%s\n"%(self.local_tree.encode(),))
+        fd.write(b"shot=%d\n"%(self.tree.shot,))
+        fd.write(b"path='%s'\n"%(self.local_path.encode(),))
 
         for i in range(6):
             line = 'D%1.1d' % i
@@ -491,7 +490,7 @@ add_cmd get.trig >> $settingsf
                     print("error retrieving bus %s" %(e,))
                 bus = ''
             if bus != '' :
-                fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
+                fd.write(b"set.route %s in %s out %s\n" %(line.encode(), wire.encode(), bus.encode(),))
                 if self.debugging():
                     print("set.route %s in %s out %s" %(line, wire, bus,))
 
@@ -537,7 +536,7 @@ add_cmd get.trig >> $settingsf
         try:
             s.settimeout(10.)
             s.connect((self.getBoardIp(),54546))
-            s.send("initialize")
+            s.send(b"initialize")
         except Exception as e:
             status=0
             s.close()

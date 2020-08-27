@@ -106,7 +106,6 @@ class ACQ196AO(Acq):
         import time
         import uu
         import MDSplus
-        import StringIO
         import subprocess
         import numpy
         """
@@ -156,7 +155,10 @@ class ACQ196AO(Acq):
                raise Exception("trigger type must be one of %s\n" % (self.trig_types,))
             msg = "Error constructing output timebase"
             dim = MDSplus.Dimension(MDSplus.Window(0, max_samples-1, trigger), MDSplus.Range(None, None, slope)).data()
-
+            if self.debugging():
+                print('slope is %f'%slope)
+                print('len(dim) is %d' %len(dim))
+                print(dim[0], dim[1], dim[len(dim)-2], dim[len(dim)-1])
             msg = "Error writing initialization file"
 
 
@@ -165,11 +167,11 @@ class ACQ196AO(Acq):
 #
             fd = tempfile.TemporaryFile()
             host = self.getMyIp()
-            fd.write("acqcmd setAbort\n")
-            fd.write("host=%s\n"%(host,))
-            fd.write("tree=%s\n"%(tree,))
-            fd.write("shot=%s\n"%(shot,))
-            fd.write("path='%s'\n"%(path,))
+            fd.write(b"acqcmd setAbort\n")
+            fd.write(b"host=%s\n"%(host.encode(),))
+            fd.write(b"tree=%s\n"%(tree.encode(),))
+            fd.write(b"shot=%d\n"%(shot,))
+            fd.write(b"path='%s'\n"%(path.encode(),))
 
             for chan in range(16):
                 if self.debugging():
@@ -205,22 +207,24 @@ class ACQ196AO(Acq):
                     wave = wave[0:max_samples-1]
                 wave = wave/10.*2**15
                 wave = wave.astype(numpy.int16)
-#                uuinfd = StringIO.StringIO(wave)
+#                if self.debugging():
+#                    import matplotlib.pyplot as plt
+#                    plt.plot(wave)
+#                    plt.show()
                 outname = "/dev/acq196/AO/f.%2.2d\n" % (chan + 1,)
-                fd.write("cat - <<EOF | uudecode  -o %s" % (outname,))
+                fd.write(b"cat - <<EOF | uudecode  -o %s" % (outname.encode(),))
                 fd.flush()
                 if self.debugging():
                     print("   ready to uuencode")
                 p = subprocess.Popen(["uuencode", "-m", "%s"%(outname,)], stdout=fd, stdin=subprocess.PIPE)
                 p.communicate(wave.tostring())
                 fd.flush()
-                fd.write("EOF\n")
+                fd.write(b"EOF\n")
 
-            fd.write("set.ao_clk %s rising\n" %(clock_src,))
-            fd.write("set.ao_trig %s rising\n" % (trig_src,))
-            fd.write("set.dtacq FAWG_div %d\n" % (fawg_div))
-            fd.write("set.dtacq AO_sawg_rate 10000\n")
-            fd.write("set.arm.AO.FAWG %s %s\n" % (cycle_type, trig_type,))
+            fd.write(b"set.ao_clk %s rising\n" %(clock_src.encode(),))
+            fd.write(b"set.ao_trig %s rising\n" % (trig_src.encode(),))
+            fd.write(b"set.dtacq FAWG_div %d\n" % (fawg_div))
+            fd.write(b"set.arm.AO.FAWG %s %s\n" % (cycle_type.encode(), trig_type.encode(),))
 
 
             fd.flush()
