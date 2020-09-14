@@ -18,7 +18,7 @@ class MARTE2_SUPERVISOR(Device):
         parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1), 'type':'structure'})
         parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':NAME', 'type':'text'})
         parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':CORE', 'type':'numeric'})
-        parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAMS', 'type':'text'})
+        parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAMS', 'type':'numeric'})
     parts.append({'path':'.TIMES', 'type':'structure'})
     for stateIdx in range(10):
       parts.append({'path':'.TIMES.STATE_'+str(stateIdx+1), 'type':'structure'})
