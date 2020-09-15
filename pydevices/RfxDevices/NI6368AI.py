@@ -183,7 +183,7 @@ class NI6368AI(Device):
     """
     def restoreInfo(self):
         if NI6368AI.niLib is None:
-	    NI6368AI.niLib = CDLL("libnixseries.so")
+           NI6368AI.niLib = CDLL("libnixseries.so")
         if NI6368AI.niInterfaceLib is None:
             NI6368AI.niInterfaceLib = CDLL("libNiInterface.so")
 
@@ -291,8 +291,8 @@ class NI6368AI(Device):
             chanFd = []
             chanNid = []
             resNid = []
-	    coeffsNid = []
-	    gainDividers = []
+            coeffsNid = []
+            gainDividers = []
             saveList = c_void_p(0)
 
 
@@ -311,10 +311,10 @@ class NI6368AI(Device):
                     chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
                     #self.device.debugPrint("chanFd "+'channel_%d_data_raw'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]
                     resNid.append( getattr(self.device, 'channel_%d_res_raw'%(self.chanMap[chan]+1)).getNid() )
-		    coeffsNid.append(getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).getNid() )
+                    coeffsNid.append(getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).getNid() )
                     gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                     gain_code = self.device.gainDict[gain]
-		    gainDividers.append(1.) #Gains nou used in calibration for 6368
+                    gainDividers.append(1.) #Gains nou used in calibration for 6368
                     status = NI6368AI.niInterfaceLib.getCalibrationParams(currFd, gain_code, coeff)
                     if( status < 0 ):
                         Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/32768'%(str(self.chanMap[chan])) )
@@ -363,7 +363,7 @@ class NI6368AI(Device):
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
             resNid_c = (c_int * len(resNid))(*resNid)
             coeffsNid_c = (c_int * len(coeffsNid))(*coeffsNid)
- 	    gainDividers_c = (c_float * len(gainDividers))(*gainDividers)
+            gainDividers_c = (c_float * len(gainDividers))(*gainDividers)
 
             trigCount = 0
 
@@ -385,7 +385,7 @@ class NI6368AI(Device):
             while not self.stopReq:
                 try :
                     status = NI6368AI.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq,
-		    c_int(self.device.getTree().shot), resNid_c)
+                    c_int(self.device.getTree().shot), resNid_c)
                 except Exception as ex :
                     self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
                     self.stopReq = True
@@ -471,9 +471,9 @@ class NI6368AI(Device):
         if self.restoreInfo() == self.DEV_IS_OPEN :
             try:
                self.restoreWorker()
-               print 'Chech Start Store'
+               print( 'Check Start Store')
                if self.worker.isAlive():
-                  print 'stop Store'
+                  print('stop Store')
                   self.stop_store()
                self.restoreInfo()
             except:
@@ -680,7 +680,7 @@ class NI6368AI(Device):
             else:
                 self.debugPrint('PXI 6368 preTrigger   = ', Int32(int(preTrigger)))
                 self.debugPrint('PXI 6368 postTrigger   = ', Int32(int(postTrigger)))
-		if  trigTime > startTime or trigMode == 'INTERNAL' : 
+                if  trigTime > startTime or trigMode == 'INTERNAL' : 
                     self.debugPrint ('PXI 6368 Acquire only post trigger when triger time > start Time or trigger mode internal') 
                     nSamples = postTrigger
                     startIdx = 0

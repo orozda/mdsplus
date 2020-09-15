@@ -40,4 +40,4 @@ class MARTE2_SWTRIG(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-	pass
+      pass

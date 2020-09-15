@@ -60,8 +60,6 @@ static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
   
 namespace MDSplus {
-  
-  
 void eventAst(void *arg, int len, char *buf)
 {
 #ifdef _WIN32
