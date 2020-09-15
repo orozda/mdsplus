@@ -289,13 +289,13 @@ class NI6259AI(Device):
             chanFd = []
             chanNid = []
             resNid = []
-	    coeffsNid = []
+            coeffsNid = []
 
             coeff_array = c_float*4
             coeff = coeff_array();
 
             #NI6259AI.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
-	    gainDividers = []
+            gainDividers = []
             for chan in range(len(self.chanMap)):
                 try:
                     #self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
@@ -306,11 +306,11 @@ class NI6259AI(Device):
                     chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
                     #self.device.debugPrint "chanFd "+'channel_%d_data'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]
                     resNid.append( getattr(self.device, 'channel_%d_res_raw'%(self.chanMap[chan]+1)).getNid() )
-		    coeffsNid.append(getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).getNid() ) 
+                    coeffsNid.append(getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).getNid() ) 
 
                     gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                     gain_code = self.device.gainDict[gain]
-		    gainDividers.append(self.device.gainDividerDict[gain])
+                    gainDividers.append(self.device.gainDividerDict[gain])
                     n_coeff = c_int(0)
                     status = NI6259AI.niInterfaceLib.pxi6259_getCalibrationParams(currFd, gain_code, coeff, byref(n_coeff) )
 
@@ -370,7 +370,7 @@ class NI6259AI(Device):
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
             resNid_c = (c_int * len(resNid))(*resNid)
             coeffsNid_c = (c_int * len(coeffsNid))(*coeffsNid)
- 	    gainDividers_c = (c_float * len(gainDividers))(*gainDividers)
+            gainDividers_c = (c_float * len(gainDividers))(*gainDividers)
 
             #timeAt0 = trigSource + startTime
             #self.device.debugPrint("PXI 6259 TIME AT0 ", numSamples)            
@@ -449,7 +449,7 @@ class NI6259AI(Device):
             try:
                self.restoreWorker()
                if self.worker.isAlive():
-                  print 'stop Store'
+                  print ('stop Store')
                   self.stop_store()
                self.restoreInfo()
             except:
@@ -607,8 +607,8 @@ class NI6259AI(Device):
             else:
                 try:
                     trigSource = self.trig_source.data()
-		except:
-		    trigSource = 0;
+                except:
+                    trigSource = 0;
             self.debugPrint('PXI 6259 Trigger source: ',trigSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
@@ -925,8 +925,8 @@ class NI6259AI(Device):
     def trigger(self):
 
       if self.restoreInfo() != self.DEV_IS_OPEN  :
-	    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
-	    raise mdsExceptions.TclFAILED_ESSENTIAL
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
       try:
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))
