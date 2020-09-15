@@ -449,7 +449,7 @@ class NI6259AI(Device):
             try:
                self.restoreWorker()
                if self.worker.isAlive():
-                  print ('stop Store')
+                  print 'stop Store'
                   self.stop_store()
                self.restoreInfo()
             except:
@@ -607,8 +607,8 @@ class NI6259AI(Device):
             else:
                 try:
                     trigSource = self.trig_source.data()
-                except:
-                    trigSource = 0;
+		except:
+		    trigSource = 0;
             self.debugPrint('PXI 6259 Trigger source: ',trigSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
@@ -925,8 +925,8 @@ class NI6259AI(Device):
     def trigger(self):
 
       if self.restoreInfo() != self.DEV_IS_OPEN  :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
+	    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
+	    raise mdsExceptions.TclFAILED_ESSENTIAL
 
       try:
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))
