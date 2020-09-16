@@ -69,15 +69,15 @@ class ELPROBES_CFG(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading probes labels ' + str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-	for i in range(0,self.PROBES_NUM):
-	    if  "None" in probes_tag[i]  or (len(probes_tag[i].strip()) == 0)  :
-	        continue
-	    try:
+        for i in range(0,self.PROBES_NUM):
+            if  "None" in probes_tag[i]  or (len(probes_tag[i].strip()) == 0)  :
+                continue
+            try:
                 tag = probes_tag[i].strip()+'_CFG'
                 getattr(self, 'probe_%02d'%(i+1)).addTags(tag)
-                print 'PROBE_%02d = %s'%(i+1, tag)
-	    except Exception as e :
-	        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot write tag to probe %d. Experiment must be open in Edit Mode : %s '%(i+1, str(e)) )
+                print ('PROBE_%02d = %s'%(i+1, tag))
+            except Exception as e :
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot write tag to probe %d. Experiment must be open in Edit Mode : %s '%(i+1, str(e)) )
                 raise mdsExceptions.TclFAILED_ESSENTIAL
                     
         return 1
@@ -106,7 +106,7 @@ class ELPROBES_CFG(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            print 'Loading data from excel configuration file [%s] ...'%(configurationFile),            
+            print ('Loading data from excel configuration file [%s] ...'%(configurationFile),  )          
 
             param='configurationFile'
             wb = load_workbook(configurationFile, data_only=True)
@@ -164,7 +164,7 @@ class ELPROBES_CFG(Device):
 
             wb.close()
 
-            print ' data loaded'            
+            print (' data loaded')            
 
 
         except Exception as e :
@@ -238,10 +238,10 @@ class ELPROBES_CFG(Device):
         for i in range(0, self.PROBES_NUM):
 
 
-	    if  len( label_arr[i].strip() ) == 0 or label_arr[i].strip() == 'None' :
+            if  len( label_arr[i].strip() ) == 0 or label_arr[i].strip() == 'None' :
                 continue
 
-            print '[%0.2d] Configuration for probe %s : '%(i+1, label_arr[i]), 
+            print ('[%0.2d] Configuration for probe %s : '%(i+1, label_arr[i]),) 
 
             #print "Save probes %d %s"%(i+1, label_arr[i])
 
@@ -259,10 +259,10 @@ class ELPROBES_CFG(Device):
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-	    if  len( front_end_arr[i].strip() ) == 0 or  front_end_arr[i].strip() == 'None':
+            if  len( front_end_arr[i].strip() ) == 0 or  front_end_arr[i].strip() == 'None':
                 #print label_arr[i] + " probe reset data and set off"
                 getattr(self, 'probe_%02d'%(i+1)).setOn(False)
-		getattr(self, 'probe_%02d_front_end'%(i+1)).deleteData()
+                getattr(self, 'probe_%02d_front_end'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_front_end_ch'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_adc_slow'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_adc_slow_con'%(i+1)).deleteData()
@@ -273,28 +273,28 @@ class ELPROBES_CFG(Device):
                 getattr(self, 'probe_%02d_bias_source'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_bias'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_irange'%(i+1)).deleteData()
-	        getattr(self, 'probe_%02d_data_sv'%(i+1)).deleteData()
+                getattr(self, 'probe_%02d_data_sv'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_help_sv'%(i+1)).deleteData()
-		getattr(self, 'probe_%02d_data_si'%(i+1)).deleteData()
+                getattr(self, 'probe_%02d_data_si'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_help_si'%(i+1)).deleteData()
-		getattr(self, 'probe_%02d_data_fv'%(i+1)).deleteData()
+                getattr(self, 'probe_%02d_data_fv'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_help_fv'%(i+1)).deleteData()
-		getattr(self, 'probe_%02d_data_fi'%(i+1)).deleteData()
+                getattr(self, 'probe_%02d_data_fi'%(i+1)).deleteData()
                 getattr(self, 'probe_%02d_help_fi'%(i+1)).deleteData()
 
-		try :
-		   self.__getattr__('\\%sSV'%(label_arr[i]) ).setOn(False)
-		   self.__getattr__('\\%sSI'%(label_arr[i]) ).setOn(False)
-		   self.__getattr__('\\%sFV'%(label_arr[i]) ).setOn(False)
-		   self.__getattr__('\\%sFI'%(label_arr[i]) ).setOn(False)
-		except Exception :
-		   print 'WARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i])   
+                try :
+                   self.__getattr__('\\%sSV'%(label_arr[i]) ).setOn(False)
+                   self.__getattr__('\\%sSI'%(label_arr[i]) ).setOn(False)
+                   self.__getattr__('\\%sFV'%(label_arr[i]) ).setOn(False)
+                   self.__getattr__('\\%sFI'%(label_arr[i]) ).setOn(False)
+                except Exception :
+                   print ('WARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i]) )  
 
-                print '[set OFF]'
+                print ('[set OFF]')
 
-		continue 
+                continue 
             else :
-                print '[set ON]',
+                print ('[set ON]')
                 getattr(self, 'probe_%02d'%(i+1)).setOn(True)
 
             try:
@@ -354,7 +354,7 @@ class ELPROBES_CFG(Device):
                #Reset current link
 
                node = self.__getattr__('\\%s.CH_%02d:SOURCE'%(front_end_arr[i], int( front_end_ch_arr[i])));
-	       expr_val = Data.compile('build_path($)', node.getFullPath())	
+               expr_val = Data.compile('build_path($)', node.getFullPath())	
                getattr(self, 'probe_%02d_bias_source'%(i+1)).putData( expr_val )
           
                """
@@ -364,18 +364,18 @@ class ELPROBES_CFG(Device):
                """
 
                node = self.__getattr__('\\%s.CH_%02d:IRANGE'%(front_end_arr[i], int( front_end_ch_arr[i])));
-	       expr_val = Data.compile('build_path($)', node.getFullPath())
+               expr_val = Data.compile('build_path($)', node.getFullPath())
                irange_node = getattr(self, 'probe_%02d_irange'%(i+1)) 	
                irange_node.putData( expr_val )
 
-	       calib_rv_node = getattr(self, 'probe_%02d_calib_rv'%(i+1))
-	       calib_ri_high_node = getattr(self, 'probe_%02d_calib_ri_h'%(i+1))
-	       calib_ri_low_node = getattr(self, 'probe_%02d_calib_ri_l'%(i+1))
+               calib_rv_node = getattr(self, 'probe_%02d_calib_rv'%(i+1))
+               calib_ri_high_node = getattr(self, 'probe_%02d_calib_ri_h'%(i+1))
+               calib_ri_low_node = getattr(self, 'probe_%02d_calib_ri_l'%(i+1))
 	
         
                if len( adc_slow_arr[i].strip() ) != 0 and adc_slow_arr[i].strip() != 'None' :
 
-	           if adc_slow_con_arr[i] == "CON_0" :
+                   if adc_slow_con_arr[i] == "CON_0" :
                        adc_slow_i_node = self.__getattr__('\\%s.CHANNEL_%d:DATA'%(adc_slow_arr[i], int( front_end_ch_arr[i])) )
                        self.__setNodeState('\\%s.CHANNEL_%d'%(adc_slow_arr[i], int( front_end_ch_arr[i])), True)
                        adc_slow_v_node = self.__getattr__('\\%s.CHANNEL_%d:DATA'%(adc_slow_arr[i], int( front_end_ch_arr[i])+8 ))
@@ -403,25 +403,25 @@ class ELPROBES_CFG(Device):
                    getattr(self, 'probe_%02d_data_sv'%(i+1)).setOn(True)
                    getattr(self, 'probe_%02d_data_si'%(i+1)).setOn(True)
 
-                   print '[slow adc %s %s]'%(adc_slow_arr[i], adc_slow_con_arr[i]),
+                   print ('[slow adc %s %s]'%(adc_slow_arr[i], adc_slow_con_arr[i]),)
 
                    try :
-		      self.__getattr__('\\%sSV'%(label_arr[i]) ).setOn(True)
-		      self.__getattr__('\\%sSI'%(label_arr[i]) ).setOn(True)
+                      self.__getattr__('\\%sSV'%(label_arr[i]) ).setOn(True)
+                      self.__getattr__('\\%sSI'%(label_arr[i]) ).setOn(True)
                    except Exception :
-                      print '\nWARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i])   
+                      print ('\nWARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i]) )  
 
                else :
-                   print ' '
+                   print (' ')
                    getattr(self, 'probe_%02d_data_sv'%(i+1)).deleteData()
                    getattr(self, 'probe_%02d_data_sv'%(i+1)).setOn(False)
                    getattr(self, 'probe_%02d_data_si'%(i+1)).deleteData()
                    getattr(self, 'probe_%02d_data_si'%(i+1)).setOn(False)
                    try :
-		      self.__getattr__('\\%sSV'%(label_arr[i]) ).setOn(False)
-		      self.__getattr__('\\%sSI'%(label_arr[i]) ).setOn(False)
+                      self.__getattr__('\\%sSV'%(label_arr[i]) ).setOn(False)
+                      self.__getattr__('\\%sSI'%(label_arr[i]) ).setOn(False)
                    except Exception :
-                      print '\nWARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i])   
+                      print ('\nWARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i]))   
 
 
                if len( adc_fast_arr[i].strip() ) != 0 and adc_fast_arr[i].strip() != 'None' :
@@ -444,25 +444,25 @@ class ELPROBES_CFG(Device):
                    getattr(self, 'probe_%02d_data_fi'%(i+1)).putData(expr_fast_i);
                    getattr(self, 'probe_%02d_help_fi'%(i+1)).putData('%s fast acquisition current'%(label_arr[i]));
 
-                   print '[fast adc %s]'%(adc_fast_arr[i])
+                   print ('[fast adc %s]'%(adc_fast_arr[i]))
 
                    try :
-		      self.__getattr__('\\%sFV'%(label_arr[i]) ).setOn(True)
-		      self.__getattr__('\\%sFI'%(label_arr[i]) ).setOn(True)
+                      self.__getattr__('\\%sFV'%(label_arr[i]) ).setOn(True)
+                      self.__getattr__('\\%sFI'%(label_arr[i]) ).setOn(True)
                    except Exception :
-                      print '\nWARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i])   
+                      print ('\nWARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i]))   
 
                else :
-                   print ' '
+                   print (' ')
                    getattr(self, 'probe_%02d_data_fv'%(i+1)).deleteData();
                    getattr(self, 'probe_%02d_data_fv'%(i+1)).setOn(False);
                    getattr(self, 'probe_%02d_data_fi'%(i+1)).deleteData();
                    getattr(self, 'probe_%02d_data_fi'%(i+1)).setOn(False);
                    try :
-		      self.__getattr__('\\%sFV'%(label_arr[i]) ).setOn(False)
-		      self.__getattr__('\\%sFI'%(label_arr[i]) ).setOn(False)
+                      self.__getattr__('\\%sFV'%(label_arr[i]) ).setOn(False)
+                      self.__getattr__('\\%sFI'%(label_arr[i]) ).setOn(False)
                    except Exception :
-                      print 'WARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i])  
+                      print ('WARNING : The configuration excel file added the probe %s.\nThe updateSignalsProbes command MUST be execute'%(label_arr[i]) ) 
 
             except Exception as e:
                 traceback.print_exc()

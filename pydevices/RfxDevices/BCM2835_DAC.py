@@ -182,9 +182,9 @@ class BCM2835_DAC(Device):
            
             print("Event %s occurred at %s with data: %s " %(str(self.event),str(self.qtime.date),str(self.raw)))
             jcmd = self.raw.deserialize()
-            print jcmd
+            print (jcmd)
 
-	    cmdEventName = self.device.cmd_event.data();
+            cmdEventName = self.device.cmd_event.data();
 
             if jcmd["command"] == 'pause' :
                try :     
@@ -215,7 +215,7 @@ class BCM2835_DAC(Device):
                       if chFreqAr[ch] < minFreq:
                          minFreq = chFreqAr[ch]
 
-	       numPeriod = (np.asarray(chFreqAr) / minFreq + 0.5).astype(int)
+               numPeriod = (np.asarray(chFreqAr) / minFreq + 0.5).astype(int)
 
                periodPoint = []
                for ch in range(4):
@@ -226,14 +226,14 @@ class BCM2835_DAC(Device):
                        periodPoint.append( 0 )
 
                wavePoint = (np.asarray(periodPoint) + 0.5).astype(int)
-               print 'Wave point ', wavePoint
+               print ('Wave point ', wavePoint)
 
                try:
                    self.device.__stopGeneration__()
                    self.device.closeInfo()
-		   if self.device.restoreInfo(True) == self.ERROR :
-		       Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open device')
-		       raise mdsExceptions.DevINV_SETUP
+                   if self.device.restoreInfo(True) == self.ERROR :
+                       Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open device')
+                       raise mdsExceptions.DevINV_SETUP
                    self.device.saveInfo()
 
                    for ch in range(4):
@@ -262,7 +262,7 @@ class BCM2835_DAC(Device):
         offset = ( chMax + chMin ) / 2
         level  = ( chMax - chMin ) / 2
 
-        print "ch type ", chType
+        print ("ch type ", chType)
 
         # create one complete sine period in volts
     
@@ -299,7 +299,7 @@ class BCM2835_DAC(Device):
              xi = np.linspace(aoX[0],aoX[len(aoX)-1],wavePoint)
              #sigData = offset + level * np.interp(xi, aoX, aoY, wavePoint)
              sigData = np.interp(xi, aoX, aoY, wavePoint)
-             print sigData
+             print (sigData)
         else:
              return None
 
@@ -312,7 +312,7 @@ class BCM2835_DAC(Device):
         isOn = getattr(self, 'ao_%d'%(ch+1)).isOn()
 
         if not reset and  isOn :
-            print "configChannel ", ch, reset, wavePoint, chMax, chMin, chType, aoX, aoY, nPeriod
+            print ("configChannel ", ch, reset, wavePoint, chMax, chMin, chType, aoX, aoY, nPeriod)
             scaledWriteArray = self.buildWave(wavePoint, chMax, chMin, chType, aoX, aoY, nPeriod)
         else:
             zero_arr = np.zeros(wavePoint)
@@ -395,13 +395,13 @@ class BCM2835_DAC(Device):
 
 
         if chType == "AS_IS":
-	    try:
+            try:
                 chAOX = getattr(self, 'ao_%d_x'%(ch+1)).data()
             except Exception as ex:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid channel %d wave aoY : %s'%(ch+1, str(ex)))
                 raise mdsExceptions.DevBAD_PARAMETER
 
-	    try:
+            try:
                 chAOY = getattr(self, 'ao_%d_y'%(ch+1)).data()
             except Exception as ex:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid channel %d wave aoX : %s'%(ch+1, str(ex)))
@@ -440,7 +440,7 @@ class BCM2835_DAC(Device):
 
 
         wavePoint = (np.asarray(periodPoint) + 0.5).astype(int)
-        print 'Wave point ', wavePoint
+        print ('Wave point ', wavePoint)
         
 
         for ch in range(4) :
@@ -450,7 +450,7 @@ class BCM2835_DAC(Device):
 
     def init(self):
 
-        print '================= BCM2835_DAC Generation Init ==============='
+        print ('================= BCM2835_DAC Generation Init ===============')
 
         if self.restoreInfo(True) == self.ERROR :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
@@ -495,7 +495,7 @@ class BCM2835_DAC(Device):
         return self.NO_ERROR
 
     def start_gen(self):
-        print "================ BCM2835_DAC  Start Geneation ============="
+        print ("================ BCM2835_DAC  Start Generation =============")
 
         self.__startGeneration__(isUpdate=False)
         
@@ -527,7 +527,7 @@ class BCM2835_DAC(Device):
 
 
     def stop_gen(self):
-        print "================ BCM2835_DAC  Stop Geneation ============="
+        print ("================ BCM2835_DAC  Stop Geneation =============")
 
         self.__stopGeneration__()
         
@@ -616,7 +616,7 @@ class BCM2835_DAC(Device):
         cmd['chAOY'] = np.asarray(chAOYAr) 
         cmd['chFreq'] = np.asarray(chFreqAr) 
 
-        print cmd
+        print (cmd)
 
         if self.__cmdEvent__(cmd) == self.ERROR :
             raise mdsExceptions.DevCOMM_ERROR

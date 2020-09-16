@@ -245,16 +245,16 @@ class BCM2835_ADC(Device):
                 self.device.debugPrint("BMC2835 NUM SAMPLES ", numSamples)
 
 
-            print('SEGEMNT SIZE DOPO: ', segmentSize)
+            print('SEGMENT SIZE DOPO: ', segmentSize)
 
 
-            print 'startSave'
+            print ('startSave')
             saveList = c_void_p(0)
             BCM2835_ADC.asyncStoreManagerLib.startSave(byref(saveList))
 
-            print 'getStopAcqFlag'
+            print ('getStopAcqFlag')
             BCM2835_ADC.bcm2835InterfaceLib.getStopAcqFlag(byref(self.stopAcq))
-            print self.stopAcq
+            print (self.stopAcq)
 
             #count = 0
 
@@ -270,9 +270,9 @@ class BCM2835_ADC(Device):
                 BCM2835_ADC.bcm2835InterfaceLib.setStopAcqFlag(self.stopAcq);
 
             while not self.stopReq:
-                print 'in bcn2835_readAndSaveAllChannels'
+                print ('in bcn2835_readAndSaveAllChannels')
                 status =  BCM2835_ADC.bcm2835InterfaceLib.bcn2835_readAndSaveAllChannels( c_int(bufSize), c_int(segmentSize), c_int(numSamples), chanNid_c,self.device.clock_source.getNid(), c_float( timeAt0 ), c_float(period),self.treePtr, saveList, (self.stopAcq), c_int(self.device.getTree().shot), resNid_c, c_int8(trigMode) )
-                print 'out bcn2835_readAndSaveAllChannels'
+                print ('out bcn2835_readAndSaveAllChannels')
 
 
    ##Check termination
@@ -317,7 +317,7 @@ class BCM2835_ADC(Device):
             try:
                self.restoreWorker()
                if self.worker.isAlive():
-                  print 'stop Store'
+                  print ('stop Store')
                   self.stop_store()
                self.restoreInfo()
             except:
@@ -361,14 +361,14 @@ class BCM2835_ADC(Device):
             self.debugPrint('BCM2835 Trigger mode: ', trigMode)
             if(trigMode == 'EXTERNAL'):
                 if(acqMode == 'TRANSIENT REC.'):
-                    print "External Trigger Transient recorder"
+                    print( "External Trigger Transient recorder")
                 else:
-                    print "External Trigger Continuous recorder"
+                    print ("External Trigger Continuous recorder")
             else:
                 if(acqMode == 'TRANSIENT REC.'):
-                    print "Internal Trigger Transient recorder"
+                    print ("Internal Trigger Transient recorder")
                 else:
-                    print "Internal Trigger Continuous recorder"
+                    print ("Internal Trigger Continuous recorder")
         except:
             traceback.print_exc(file=sys.stdout)
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid triger mode definition')
@@ -381,8 +381,8 @@ class BCM2835_ADC(Device):
             else:
                 try:
                     trigSource = self.trig_source.data()
-		except:
-		    trigSource = 0;
+                except:
+                    trigSource = 0;
             self.debugPrint('BCM2835 Trigger source: ',trigSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
@@ -403,7 +403,7 @@ class BCM2835_ADC(Device):
                 self.clock_source.putData(clockSource)
             else:
                 clockSource = self.clock_source.evaluate()
-                print "External clock" 
+                print ("External clock") 
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid clock definition')
             raise DevBAD_PARAMETER
@@ -488,10 +488,10 @@ class BCM2835_ADC(Device):
         self.worker.daemon = True
         self.worker.stopReq = False
 
-        print 'Tree opening'
+        print ('Tree opening')
         treePtr = c_void_p(0)
         BCM2835_ADC.asyncStoreManagerLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
-        print 'Tree opened'
+        print ('Tree opened')
 
         self.worker.configure(self, self.fd, treePtr)
 

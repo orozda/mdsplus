@@ -659,7 +659,7 @@ class PTGREY(Device):
     def stopAcquisition(self):
       if self.checkWorker():    #FM 20191114
         self.restoreWorker()
-      	self.worker.stop()
+        self.worker.stop()
         self.removeWorker()
       else:
         self.debugPrint("Camera is not in acquisition. Action not performed.")

@@ -94,15 +94,15 @@ class LASER_QSMART(Device):
             answer = ''
             #while not answer.endswith('\n'):
             while True:
-	        answer += sock.recv(256)
+               answer += sock.recv(256)
         except socket.timeout as e:   
             if len(answer) > 0:
                 out = re.split('=|:|\n', answer)
                 print ('Command %s %s  -> %s'%(cmd, value, answer[:-1]))
-	        if 'ERROR' in answer :
+                if 'ERROR' in answer :
                     return -1, out[1].strip()
                 elif 'OK' in answer :         
-	            if  out[0].strip() == 'OK':
+                    if  out[0].strip() == 'OK':
                         value = None
                     else :
                         value = out[1].strip()
@@ -184,7 +184,7 @@ class LASER_QSMART(Device):
                   #time.sleep(2)
 
                   delay = (9 - (time.time() - ephocSec))
-                  print 'DELAY ', delay
+                  print( 'DELAY ', delay)
                   if delay > 0:
                        time.sleep(delay)
 
@@ -333,7 +333,7 @@ class LASER_QSMART(Device):
 
         stopArm = Condition()
 
-	self.worker.configure(self, ip_address, port, stopArm)
+        self.worker.configure(self, ip_address, port, stopArm)
 
         self.saveWorker()
         self.worker.start()
