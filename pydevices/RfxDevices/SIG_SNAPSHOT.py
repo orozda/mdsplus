@@ -39,7 +39,10 @@ from time import sleep
 import sys
 import numpy as np
 import select
-import psycopg2
+try:
+  import psycopg2
+except:
+  pass
 class SIG_SNAPSHOT(Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
     parts = [{'path':':COMMENT', 'type':'text'},
@@ -268,7 +271,7 @@ class SIG_SNAPSHOT(Device):
       try:
         host = self.db_server.data()
       except:
-	host = ''
+        host = ''
       try:
         database = self.database.data()
         user = self.db_user.data()
@@ -312,7 +315,7 @@ class SIG_SNAPSHOT(Device):
             continue  #do not update empty signals 
           insertCommand += ',\''+ paths[sigIdx]+'\''
           if len(signals[sigIdx].shape) == 1:
-	    if len(signals[sigIdx]) > timeIdx:
+            if len(signals[sigIdx]) > timeIdx:
               insertCommand += ', '+str(signals[sigIdx][timeIdx])
             else:
               insertCommand += ', '

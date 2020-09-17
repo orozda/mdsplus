@@ -260,6 +260,7 @@ class MARTE2_SUPERVISOR(Device):
 
 
     def buildConfiguration(self):
+      print('START BUILD')
       error, info, threadMap = self.getInfo()
       if error != '':
         return 0
@@ -369,6 +370,7 @@ class MARTE2_SUPERVISOR(Device):
       f = open(info['name']+'_marte_configuration.cfg', 'w')
       f.write(confText)
       f.close()
+      print('END BUILD')
       return 1
 
 
